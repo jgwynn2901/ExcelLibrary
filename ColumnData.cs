@@ -1,6 +1,4 @@
-﻿using ClosedXML.Excel;
-
-namespace ExcelLibrary
+﻿namespace ExcelLibrary
 {
     public class ColumnData<T>
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ClosedXML.Excel;
 
 namespace ExcelLibrary
@@ -25,7 +26,7 @@ namespace ExcelLibrary
                 {
                     var cell = worksheet.Cell(row, col++);
                    cell.Value = prop.GetValue(record);
-                    switch (prop.PropertyType.Name)
+                    switch (prop.PropertyType.Name.ToLower())
                     {
                         case "int":
                         case "double":
@@ -33,7 +34,7 @@ namespace ExcelLibrary
                         case "decimal":
                             cell.SetDataType(XLDataType.Number);
                             break;
-                        case "bool":
+                        case "boolean":
                             cell.SetDataType(XLDataType.Boolean);
                             break;
                     }
@@ -41,6 +42,42 @@ namespace ExcelLibrary
             }
 
             return workbook;
+        }
+
+        public static IEnumerable<T>  IEnumerableFromWorksheet<T> (IXLWorksheet sheet) where T : new()
+        {
+            var results = new List<T>();
+            var properties = typeof(T).GetProperties();
+            var lastRow = sheet.LastRowUsed().RowNumber();
+            for (var row = 2; row <= lastRow; ++row)
+            {
+                var currentRow = sheet.Row(row);
+                var data = new T();
+                var col = 1;
+                foreach (var prop in properties)
+                {
+                    var cell = currentRow.Cell(col++);
+                    switch (prop.PropertyType.Name.ToLower())
+                    {
+                        case "int":
+                            prop.SetValue(data, (int) cell.Value);
+                            break;
+                        case "decimal":
+                            prop.SetValue(data, Convert.ToDecimal(cell.Value));
+                            break;
+                        case "boolean":
+                            prop.SetValue(data, Convert.ToBoolean(cell.Value));
+                            break;
+                        default:
+                            prop.SetValue(data, cell.Value);
+                            break;
+                    }
+                }
+
+                results.Add(data);
+            }
+
+            return results;
         }
     }
 }

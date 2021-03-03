@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ClosedXML.Excel;
 using ExcelLibrary;
 using Xunit;
@@ -35,14 +36,26 @@ namespace ExcelTests
         {
             var userList = new List<User>
             {
-                new User {Name = "Fred Flintstone", Email = "FreddieTheFlint@sedgwick.com", Registered = false, Cost = 122},
-                new User {Name = "Barney Rubble", Email = "BarnieTheRub@sedgwick.com",Registered = true, Cost = 1200},
-                new User {Name = "Pebbles Flintstone", Email = "PebbyTheFlint@sedgwick.com",Registered = false, Cost = 990},
-                new User {Name = "Wilma Flintstone", Email = "WilmieTheFlint@sedgwick.com",Registered = false, Cost = 101}
+                new User {Name = "Fred Flintstone", Email = "FreddieTheFlint@sedgwick.com", Registered = false, Cost = 122.16M},
+                new User {Name = "Barney Rubble", Email = "BarnieTheRub@sedgwick.com",Registered = true, Cost = 1200.20M},
+                new User {Name = "Pebbles Flintstone", Email = "PebbyTheFlint@sedgwick.com",Registered = false, Cost = 990.99M},
+                new User {Name = "Wilma Flintstone", Email = "WilmieTheFlint@sedgwick.com",Registered = false, Cost = 101.12M}
             };
             using (var book = ExcelUtility.WorksheetFromIEnumerable(userList))
             {
                 book.SaveAs("Flintstones.xlsx");
+            }
+        }
+
+        [Fact]
+        public void TestToIEnumerable()
+        {
+            using (var book = new XLWorkbook("Flintstones.xlsx"))
+            {
+                var sheet = book.Worksheet(1);
+                Assert.NotNull(sheet);
+                var results = ExcelUtility.IEnumerableFromWorksheet<User>(sheet);
+                Assert.True(results.Count() == 4);
             }
         }
     }

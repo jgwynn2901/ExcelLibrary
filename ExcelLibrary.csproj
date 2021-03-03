@@ -77,8 +77,6 @@
   <ItemGroup>
     <Compile Include="ColumnData.cs" />
     <Compile Include="ExcelUtility.cs" />
-    <Compile Include="Tests\TestWorkbook.cs" />
-    <Compile Include="Workbook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
